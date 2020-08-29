@@ -1,2 +1,3 @@
-import { ipcRenderer } from 'electron';
+import { ipcRenderer, dialog } from 'electron';
 window.ipcRenderer = ipcRenderer;
+window.dialog = dialog;

@@ -1,10 +1,12 @@
 'use strict'
 
-import { app, protocol, BrowserWindow, Menu } from 'electron'
+import { app, protocol, BrowserWindow, Menu, ipcMain, dialog } from 'electron'
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 import installExtension, { VUEJS_DEVTOOLS } from 'electron-devtools-installer'
 const isDevelopment = process.env.NODE_ENV !== 'production'
 import path from 'path';
+
+const appName = 'epub-anki-electron';
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -15,10 +17,27 @@ protocol.registerSchemesAsPrivileged([
   { scheme: 'app', privileges: { secure: true, standard: true } }
 ])
 
+function registerSafeFileProtocol() {
+  const safeFileProtocol = `${appName}-safe-file-protocol`
+  protocol.registerFileProtocol(safeFileProtocol, (request, callback) => {
+    const url = request.url.replace(`${safeFileProtocol}://`, '')
+    // Decode URL to prevent errors when loading filenames with UTF-8 chars or chars like "#"
+    const decodedUrl = decodeURIComponent(url)
+    try {
+      return callback({
+        path: decodedUrl
+      })
+    }
+    catch (error) {
+      console.error('ERROR: main | registerSafeFileProtocol | Could not get file path', error)
+    }
+  })
+}
+
 function createWindow() {
   // Create the browser window.
   win = new BrowserWindow({
-    width: 800,
+    width: 1200,
     height: 600,
     webPreferences: {
       // Use pluginOptions.nodeIntegration, leave this alone
@@ -31,7 +50,9 @@ function createWindow() {
   if (process.env.WEBPACK_DEV_SERVER_URL) {
     // Load the url of the dev server if in development mode
     win.loadURL(process.env.WEBPACK_DEV_SERVER_URL)
-    if (!process.env.IS_TEST) win.webContents.openDevTools()
+    if (!process.env.IS_TEST) {
+      win.webContents.openDevTools()
+    }
   } else {
     createProtocol('app')
     // Load the index.html when not in development
@@ -88,6 +109,20 @@ app.on('ready', async () => {
     }
   }
   createWindow()
+  registerSafeFileProtocol();
+})
+
+ipcMain.on('open-file-dialog', (event) => {
+  const window = BrowserWindow.getFocusedWindow()
+
+  dialog.showOpenDialog(window, { properties: ['openFile'] })
+      .then(result => {
+        // Send the path back to the renderer
+        event.sender.send('open-file-dialog-reply', { path: result.filePaths[0] })
+      })
+      .catch(error => {
+        console.log('ERROR: main | open-file-dialog | Could not get file path')
+      })
 })
 
 // Exit cleanly on request from parent process in development mode.

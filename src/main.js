@@ -3,7 +3,7 @@ import App from './App.vue'
 
 Vue.config.productionTip = false
 
-console.log(window.ipcRenderer)
+// console.log(window.ipcRenderer)
 
 window.ipcRenderer.on('hello', (event, arg) => {
   // Get the current Vue instance (i.e. which component/route is currently active)
