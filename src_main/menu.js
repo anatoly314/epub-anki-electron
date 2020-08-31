@@ -11,9 +11,9 @@ export function createMenuTemplate () {
             submenu: [
                 {
                     label: 'Open book',
-                    click() {
+                    async click() {
                         console.log('add item');
-                        openBook();
+                        await openBook();
                     }
                 },
                 {

@@ -1,19 +1,19 @@
 import { app, protocol, BrowserWindow, Menu, ipcMain, dialog } from 'electron'
 import fs from "fs";
+import pify from 'pify';
 
-export function openBook(){
+export async function openBook(){
     const window = BrowserWindow.getFocusedWindow();
-    dialog.showOpenDialog(window, { properties: ['openFile'] })
-        .then(result => {
-            // Send the path back to the renderer
-            const filename = result.filePaths[0];
-            const fileData = fs.readFileSync(filename, 'binary');
-            window.webContents.send('open-file-reply', {
-                filename: filename,
-                fileData: fileData
-            });
-        })
-        .catch(error => {
-            console.log('ERROR: main | open-file-dialog | Could not get file path')
-        })
+
+    try {
+        const result = await pify(dialog.showOpenDialog(window, { properties: ['openFile'] }));
+        const filename = result.filePaths[0];
+        const fileData = fs.readFileSync(filename, 'binary');
+        window.webContents.send('open-file-reply', {
+            filename: filename,
+            fileData: fileData
+        });
+    } catch (e) {
+        console.log('ERROR: main | open-file-dialog | Could not get file path')
+    }
 }
