@@ -1,7 +1,8 @@
 # epub-anki-electron
 - Possible built with this plugin: https://github.com/nklayman/vue-cli-plugin-electron-builder
 - [secure-electron-template](https://github.com/reZach/secure-electron-template)
-- [Upload files](https://github.com/nklayman/vue-cli-plugin-electron-builder/issues/742#issuecomment-626333159) 
+- [Upload files](https://github.com/nklayman/vue-cli-plugin-electron-builder/issues/742#issuecomment-626333159)
+- [Similar app example](https://github.com/mcthulhu/jorkens) 
 
 ## Project setup
 ```

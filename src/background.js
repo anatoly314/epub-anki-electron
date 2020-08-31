@@ -1,5 +1,5 @@
 'use strict'
-
+import fs from 'fs';
 import { app, protocol, BrowserWindow, Menu, ipcMain, dialog } from 'electron'
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 import installExtension, { VUEJS_DEVTOOLS } from 'electron-devtools-installer'
@@ -17,22 +17,6 @@ protocol.registerSchemesAsPrivileged([
   { scheme: 'app', privileges: { secure: true, standard: true } }
 ])
 
-function registerSafeFileProtocol() {
-  const safeFileProtocol = `${appName}-safe-file-protocol`
-  protocol.registerFileProtocol(safeFileProtocol, (request, callback) => {
-    const url = request.url.replace(`${safeFileProtocol}://`, '')
-    // Decode URL to prevent errors when loading filenames with UTF-8 chars or chars like "#"
-    const decodedUrl = decodeURIComponent(url)
-    try {
-      return callback({
-        path: decodedUrl
-      })
-    }
-    catch (error) {
-      console.error('ERROR: main | registerSafeFileProtocol | Could not get file path', error)
-    }
-  })
-}
 
 function createWindow() {
   // Create the browser window.
@@ -42,7 +26,7 @@ function createWindow() {
     webPreferences: {
       // Use pluginOptions.nodeIntegration, leave this alone
       // See nklayman.github.io/vue-cli-plugin-electron-builder/guide/security.html#node-integration for more info
-      nodeIntegration: process.env.ELECTRON_NODE_INTEGRATION,
+      nodeIntegration: true,
       preload: path.join(__dirname, 'preload.js')
     }
   })
@@ -109,8 +93,9 @@ app.on('ready', async () => {
     }
   }
   createWindow()
-  registerSafeFileProtocol();
+  // registerSafeFileProtocol();
 })
+
 
 ipcMain.on('open-file-dialog', (event) => {
   const window = BrowserWindow.getFocusedWindow()
@@ -118,12 +103,14 @@ ipcMain.on('open-file-dialog', (event) => {
   dialog.showOpenDialog(window, { properties: ['openFile'] })
       .then(result => {
         // Send the path back to the renderer
-        event.sender.send('open-file-dialog-reply', { path: result.filePaths[0] })
+        const filename = result.filePaths[0];
+        event.sender.send('open-file-dialog-reply', { file: filename })
       })
       .catch(error => {
         console.log('ERROR: main | open-file-dialog | Could not get file path')
       })
 })
+
 
 // Exit cleanly on request from parent process in development mode.
 if (isDevelopment) {
