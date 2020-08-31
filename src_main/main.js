@@ -8,8 +8,6 @@ import path from 'path';
 
 import { createMenuTemplate } from "./menu";
 
-const appName = 'epub-anki-electron';
-
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let win
@@ -49,7 +47,7 @@ async function createWindow() {
     win = null
   });
 
-  const menuTemplate = createMenuTemplate(app);
+  const menuTemplate = createMenuTemplate();
   const menu = Menu.buildFromTemplate(menuTemplate)
   Menu.setApplicationMenu(menu)
 }
@@ -59,7 +57,7 @@ app.on('window-all-closed', () => {
   // On macOS it is common for applications and their menu bar
   // to stay active until the user quits explicitly with Cmd + Q
   if (process.platform !== 'darwin') {
-    app.quit()
+    app.quit();
   }
 })
 
@@ -83,13 +81,12 @@ app.on('ready', async () => {
       console.error('Vue Devtools failed to install:', e.toString())
     }
   }
-  createWindow()
+  await createWindow();
   // registerSafeFileProtocol();
 })
 
-
 ipcMain.on('open-file-dialog', (event) => {
-  const window = BrowserWindow.getFocusedWindow()
+  const window = BrowserWindow.getFocusedWindow();
 
   dialog.showOpenDialog(window, { properties: ['openFile'] })
       .then(result => {
@@ -100,7 +97,7 @@ ipcMain.on('open-file-dialog', (event) => {
       .catch(error => {
         console.log('ERROR: main | open-file-dialog | Could not get file path')
       })
-})
+});
 
 
 // Exit cleanly on request from parent process in development mode.

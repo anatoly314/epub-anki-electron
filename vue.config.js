@@ -6,7 +6,7 @@ module.exports = {
         electronBuilder: {
             preload: 'src/preload.js',
             nodeIntegration: true,
-            mainProcessFile: 'src_main/background.js',
+            mainProcessFile: 'src_main/main.js',
             mainProcessWatch: ['src_main/**/*']
         }
     }

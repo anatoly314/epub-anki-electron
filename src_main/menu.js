@@ -1,4 +1,8 @@
-export function createMenuTemplate (app) {
+import { app } from 'electron'
+
+import { openBook } from "./file-actions";
+
+export function createMenuTemplate () {
 
     const mainMenuTemplate = [
         // Each object is a dropdown
@@ -9,6 +13,7 @@ export function createMenuTemplate (app) {
                     label: 'Open book',
                     click() {
                         console.log('add item');
+                        openBook();
                     }
                 },
                 {
