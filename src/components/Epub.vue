@@ -13,7 +13,7 @@ const appName = 'epub-anki-electron';
 
 import ePub from 'epubjs';
 export default {
-  name: 'HelloWorld',
+  name: 'Epub',
   data() {
     return {
       rendition: null,
@@ -30,6 +30,28 @@ export default {
     next() {
       this.rendition.next();
     },
+    registerHooks () {
+      this.rendition.hooks.content.register((contents, view) => {
+        const frame = contents.document.defaultView.frameElement
+        const viewElementRect = frame.getBoundingClientRect()
+        // console.log('rendition:hooks:content', viewElementRect);
+      });
+
+      //https://github.com/futurepress/epub.js/blob/99273e7356fb009d277053649b8d43c90bc89170/examples/highlights.html
+      this.rendition.on("selected", function (cfiRange, contents){
+        console.log("rendition:selected", cfiRange, contents);
+      })
+
+      //https://github.com/futurepress/epub.js/issues/761
+      this.book.spine.hooks.serialize.register((output, section) => {
+        // console.log('hooks:serialize', output, section);
+      });
+
+
+      this.book.spine.hooks.content.register((output, section) => {
+        // console.log('spine:hooks:content', output, section);
+      });
+    },
     createBook (filename, fileData) {
       if (this.book) {
         this.book.destroy();
@@ -41,6 +63,9 @@ export default {
         height: this.$refs.bookarea.clientHeight + "px",
         spread: "always"
       });
+
+      this.registerHooks();
+
       this.displayed = this.rendition.display();
     },
     resizeBook() {
@@ -54,10 +79,7 @@ export default {
   },
   mounted() {
     window.ipcRenderer.on('open-file-reply', (event, data) => {
-      // console.log('open-file-reply', event, data);
-      // console.log('clientWidth', this.$refs.bookarea.clientWidth);
       this.$nextTick(this.createBook.bind(null, data.filename, data.fileData));
-      // this.createBook(data.filename, data.fileData);
     }),
     window.addEventListener('resize', this.resizeBook)
   },

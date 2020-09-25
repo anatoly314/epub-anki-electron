@@ -1,16 +1,16 @@
 <template>
   <div id="app">
-    <HelloWorld/>
+    <Epub/>
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import Epub from './components/Epub.vue'
 
 export default {
   name: 'App',
   components: {
-    HelloWorld
+    Epub
   }
 }
 </script>

@@ -17,7 +17,8 @@
     "core-js": "^3.6.5",
     "vue": "^2.6.11",
     "epubjs": "^0.3.88",
-    "pify": "^5.0.0"
+    "pify": "^5.0.0",
+    "photon": ""
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~4.4.0",
