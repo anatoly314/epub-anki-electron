@@ -4,6 +4,8 @@ import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 import installExtension, { VUEJS_DEVTOOLS } from 'electron-devtools-installer'
 const isDevelopment = process.env.NODE_ENV !== 'production'
 import path from 'path';
+import { initSqlite } from "./sqlite";
+initSqlite();
 
 import { createMenuTemplate } from "./menu";
 
@@ -23,8 +25,20 @@ function __changeModeCallback(mode) {
 
 // Scheme must be registered before the app is ready
 protocol.registerSchemesAsPrivileged([
-  { scheme: 'app', privileges: { secure: true, standard: true } }
+  {
+    scheme: 'app', privileges: {
+    secure: true,
+      standard: true
+    }
+  }
 ])
+
+function registerMdFileProtocol(){
+  console.log('registered');
+  protocol.registerBufferProtocol("md-file", function (request, callback){
+    console.log("md-file", request);
+  })
+}
 
 
 async function createWindow() {
@@ -90,8 +104,8 @@ app.on('ready', async () => {
       console.error('Vue Devtools failed to install:', e.toString())
     }
   }
+  registerMdFileProtocol();
   await createWindow();
-  // registerSafeFileProtocol();
 })
 
 ipcMain.on('open-file-dialog', (event) => {

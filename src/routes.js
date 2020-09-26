@@ -1,5 +1,5 @@
-import Epub from "@/components/Epub";
-import Markdown from "@/components/Markdown";
+import Epub from "@/views/Epub";
+import Markdown from "@/views/Markdown";
 
 export const routes = [{
     path: '/',
