@@ -52,7 +52,8 @@ export default {
         // console.log('spine:hooks:content', output, section);
       });
     },
-    createBook (filename, fileData) {
+    createBook (event, data) {
+      const fileData = data.fileData;
       if (this.book) {
         this.book.destroy();
       }
@@ -78,13 +79,14 @@ export default {
     }
   },
   mounted() {
-    window.ipcRenderer.on('open-file-reply', (event, data) => {
-      this.$nextTick(this.createBook.bind(null, data.filename, data.fileData));
-    }),
+    console.log('mounted');
+    window.ipcRenderer.on('open-file-reply', this.createBook),
     window.addEventListener('resize', this.resizeBook)
   },
   beforeDestroy() {
-    // Unregister the event listener before destroying this Vue instance
+    console.log('beforeDestroy');
+    window.ipcRenderer.removeListener('open-file-reply', this.createBook),
+        // Unregister the event listener before destroying this Vue instance
     window.removeEventListener('resize', this.resizeBook)
   },
   props: {

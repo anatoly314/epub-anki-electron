@@ -1,5 +1,4 @@
 'use strict'
-import fs from 'fs';
 import { app, protocol, BrowserWindow, Menu, ipcMain, dialog } from 'electron'
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 import installExtension, { VUEJS_DEVTOOLS } from 'electron-devtools-installer'
@@ -10,7 +9,17 @@ import { createMenuTemplate } from "./menu";
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
-let win
+let win;
+let menu;
+
+function __changeModeCallback(mode) {
+  const navigationRequest = {
+    name: mode.__route
+  };
+
+  menu.getMenuItemById('file-open-epub').enabled = mode.__route === 'epub';
+  win.webContents.send('route-change-request', navigationRequest);
+}
 
 // Scheme must be registered before the app is ready
 protocol.registerSchemesAsPrivileged([
@@ -47,8 +56,8 @@ async function createWindow() {
     win = null
   });
 
-  const menuTemplate = createMenuTemplate();
-  const menu = Menu.buildFromTemplate(menuTemplate)
+  const menuTemplate = createMenuTemplate(__changeModeCallback);
+  menu = Menu.buildFromTemplate(menuTemplate)
   Menu.setApplicationMenu(menu)
 }
 
@@ -87,7 +96,7 @@ app.on('ready', async () => {
 
 ipcMain.on('open-file-dialog', (event) => {
   const window = BrowserWindow.getFocusedWindow();
-
+  console.log('open-file-dialog');
   dialog.showOpenDialog(window, { properties: ['openFile'] })
       .then(result => {
         // Send the path back to the renderer

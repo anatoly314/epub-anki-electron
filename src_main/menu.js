@@ -2,7 +2,7 @@ import { app } from 'electron'
 
 import { openBook } from "./file-actions";
 
-export function createMenuTemplate () {
+export function createMenuTemplate (changeModeCallback) {
 
     const mainMenuTemplate = [
         // Each object is a dropdown
@@ -10,7 +10,8 @@ export function createMenuTemplate () {
             label: 'File',
             submenu: [
                 {
-                    label: 'Open book',
+                    id: 'file-open-epub',
+                    label: 'Open epub',
                     async click() {
                         console.log('add item');
                         await openBook();
@@ -24,6 +25,21 @@ export function createMenuTemplate () {
                     }
                 }
             ]
+        },{
+            label: 'Mode',
+            submenu: [{
+                label: 'Epub',
+                checked: true,
+                type: 'radio',
+                click: changeModeCallback,
+                __route: 'epub'
+            },{
+                label: 'Markdown',
+                type: 'radio',
+                click: changeModeCallback,
+                __route: 'markdown'
+
+            }]
         }
     ];
 

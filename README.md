@@ -5,6 +5,12 @@
 - [Similar app example](https://github.com/mcthulhu/jorkens) 
 - [PhotonKit components library](http://photonkit.com/components/)
 
+# Debuggin electron
+- run: `electron:serve:debug`
+    - `npm run electron:serve:debug`
+- run: Electron while debugging
+    - `node_modules/.bin/electron ./dist_electron --inspect=5858`
+
 ## Project setup
 ```
 yarn install

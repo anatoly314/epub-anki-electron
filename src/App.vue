@@ -1,16 +1,14 @@
 <template>
   <div id="app">
-    <Epub/>
+    <router-view></router-view>
   </div>
 </template>
 
 <script>
-import Epub from './components/Epub.vue'
 
 export default {
   name: 'App',
   components: {
-    Epub
   }
 }
 </script>
